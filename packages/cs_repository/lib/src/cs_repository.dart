@@ -949,7 +949,7 @@ class CsRepository {
 
   Future<List<Route>> allRoutes({
     int page = 1,
-    int limit = 10,
+    int limit = 100,
   }) async {
     try {
       final response = await _apiClient.getRoutes(

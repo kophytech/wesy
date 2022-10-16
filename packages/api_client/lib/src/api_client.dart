@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:api_client/src/api_interceptor.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:mime/mime.dart';
 
@@ -44,6 +45,7 @@ class ApiClient {
       return response.data;
     } on DioError catch (e) {
       if (e.response != null) {
+        debugPrint(e.response.toString());
         if (e.response!.statusCode == HttpStatus.badRequest) {
           throw HttpRequestFailure(e.response!.data['message'].toString());
         }
@@ -77,6 +79,7 @@ class ApiClient {
       return response.data;
     } on DioError catch (e) {
       if (e.response != null) {
+        debugPrint(e.response.toString());
         if (e.response!.statusCode == HttpStatus.badRequest) {
           throw HttpRequestFailure(e.response!.data['message'].toString());
         }
@@ -111,6 +114,7 @@ class ApiClient {
       return response.data;
     } on DioError catch (e) {
       if (e.response != null) {
+        debugPrint(e.response.toString());
         if (e.response!.statusCode == HttpStatus.badRequest) {
           throw HttpRequestFailure(e.response!.data['message'].toString());
         }
@@ -496,7 +500,7 @@ class ApiClient {
       return response.data!;
     } on DioError catch (e) {
       if (e.response != null) {
-        print(e.response);
+        debugPrint(e.response.toString());
         if (e.response!.statusCode == HttpStatus.badRequest) {
           throw HttpRequestFailure(e.response!.data['message'].toString());
         }
@@ -1315,6 +1319,7 @@ class ApiClient {
     }
   }
 
+  // ignore: public_member_api_docs
   Future<List<dynamic>> getPinPotentialStats() async {
     try {
       final response = await _dio.get<Map<String, dynamic>>(
@@ -1437,15 +1442,18 @@ class ApiClient {
 
   Future<List<dynamic>> getConstruction() async {
     try {
+      print('also getting here');
       final response = await _dio.get<Map<String, dynamic>>(
-        '/routes/fetch/pins/construction',
+        '/routes/fetch/pins/construction?page=1&limit=500',
         options: Options(
           headers: <String, dynamic>{'hasToken': true},
         ),
       );
+      print(response.data!['data']);
       return response.data!['data'] as List<dynamic>;
     } on DioError catch (e) {
       if (e.response != null) {
+        print(e.response);
         if (e.response!.statusCode == HttpStatus.badRequest) {
           throw HttpRequestFailure(e.response!.data['message'].toString());
         }
@@ -1458,7 +1466,7 @@ class ApiClient {
   Future<List<dynamic>> getIndustry() async {
     try {
       final response = await _dio.get<Map<String, dynamic>>(
-        '/routes/fetch/pins/industry',
+        '/routes/fetch/pins/industry?page=1&limit=500',
         options: Options(
           headers: <String, dynamic>{'hasToken': true},
         ),
@@ -1478,7 +1486,7 @@ class ApiClient {
   Future<List<dynamic>> getStore() async {
     try {
       final response = await _dio.get<Map<String, dynamic>>(
-        '/routes/fetch/pins/store',
+        '/routes/fetch/pins/store?page=1&limit=500',
         options: Options(
           headers: <String, dynamic>{'hasToken': true},
         ),
@@ -1486,6 +1494,7 @@ class ApiClient {
       return response.data!['data'] as List<dynamic>;
     } on DioError catch (e) {
       if (e.response != null) {
+        debugPrint(e.response.toString());
         if (e.response!.statusCode == HttpStatus.badRequest) {
           throw HttpRequestFailure(e.response!.data['message'].toString());
         }
@@ -1511,7 +1520,7 @@ class ApiClient {
       return response.data!['data'] as List<dynamic>;
     } on DioError catch (e) {
       if (e.response != null) {
-        print(e.response);
+        debugPrint(e.response.toString());
         if (e.response!.statusCode == HttpStatus.badRequest) {
           throw HttpRequestFailure(e.response!.data['message'].toString());
         }
@@ -1532,6 +1541,7 @@ class ApiClient {
       return response.data!['data'] as List<dynamic>;
     } on DioError catch (e) {
       if (e.response != null) {
+        debugPrint(e.response.toString());
         if (e.response!.statusCode == HttpStatus.badRequest) {
           throw HttpRequestFailure(e.response!.data['message'].toString());
         }
