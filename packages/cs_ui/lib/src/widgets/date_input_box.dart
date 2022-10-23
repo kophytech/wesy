@@ -26,6 +26,7 @@ class DateInputBox extends StatelessWidget {
       this.maxLength,
       this.inputFormat,
       this.inputType,
+      this.initialValue,
       this.isPassword = false,
       this.raduis = 10.0,
       this.borderSide = const BorderSide(color: Color(0xFFF6F6F6)),
@@ -107,6 +108,9 @@ class DateInputBox extends StatelessWidget {
   ///@macro TextBox Focus
   final FocusNode? focus;
 
+  ///@macro TextBox Initial Value
+  final DateTime? initialValue;
+
   @override
   Widget build(BuildContext context) {
     return DateTimeFormField(
@@ -150,6 +154,7 @@ class DateInputBox extends StatelessWidget {
       //DateTimeFieldPickerMode
       firstDate: DateTime(2000),
       initialDate: DateTime.now().subtract(const Duration(days: 10000)),
+      initialValue: initialValue,
       autovalidateMode: AutovalidateMode.always,
       validator: validator,
       onDateSelected: onChanged,

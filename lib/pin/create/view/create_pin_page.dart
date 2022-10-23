@@ -22,8 +22,7 @@ class CreatePinPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) =>
-          CreatePinCubit(context.read<CsRepository>())..onGetRouteId(routeId),
+      create: (context) => CreatePinCubit(context.read<CsRepository>())..onGetRouteId(routeId),
       child: CreatePinView(
         routeType: routeType,
       ),
@@ -31,16 +30,33 @@ class CreatePinPage extends StatelessWidget {
   }
 }
 
-class CreatePinView extends StatelessWidget {
+class CreatePinView extends StatefulWidget {
   CreatePinView({Key? key, required this.routeType}) : super(key: key);
 
-  final _formKey = GlobalKey<FormState>();
-  final startDateController = TextEditingController();
-  final endDateController = TextEditingController();
   final String routeType;
 
   @override
+  State<CreatePinView> createState() => _CreatePinViewState();
+}
+
+class _CreatePinViewState extends State<CreatePinView> {
+  final _formKey = GlobalKey<FormState>();
+
+  final startDateController = TextEditingController();
+
+  final endDateController = TextEditingController();
+
+  @override
+  void didChangeDependencies() {
+    context.read<CreatePinCubit>().onEndDateChanged(DateTime.now().toIso8601String());
+    context.read<CreatePinCubit>().onStartDateChanged(DateTime.now().toIso8601String());
+    super.didChangeDependencies();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    context.read<CreatePinCubit>().onEndDateChanged(DateTime.now().toIso8601String());
+    context.read<CreatePinCubit>().onStartDateChanged(DateTime.now().toIso8601String());
     final app = context.watch<AppBloc>().state;
     final l10n = AppLocalizations.of(context)!;
     return Scaffold(
@@ -103,12 +119,10 @@ class CreatePinView extends StatelessWidget {
                       label: Text(
                         '${state.currentLocation.latitude} ${state.currentLocation.longitude}',
                       ),
-                      deleteButtonTooltipMessage:
-                          'Note: This is your current coordinate',
+                      deleteButtonTooltipMessage: 'Note: This is your current coordinate',
                       backgroundColor: CsColors.white,
                       side: const BorderSide(color: Color(0xFFC5C8CB)),
-                      onDeleted: () =>
-                          context.read<CreatePinCubit>().onHasLocation(false),
+                      onDeleted: () => context.read<CreatePinCubit>().onHasLocation(false),
                     );
                   },
                 ),
@@ -121,14 +135,13 @@ class CreatePinView extends StatelessWidget {
                         children: [
                           InputBox(
                             hintText: l10n.name_of_pin,
-                            // validator: (value) {
-                            //   if (value!.isEmpty) {
-                            //     return 'Name cannot be empty';
-                            //   }
-                            //   return null;
-                            // },
-                            onChanged:
-                                context.read<CreatePinCubit>().onNameChanged,
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return 'Name cannot be empty';
+                              }
+                              return null;
+                            },
+                            onChanged: context.read<CreatePinCubit>().onNameChanged,
                           ),
                           Gap(context.minBlockVertical * 3.0),
                           InputBox(
@@ -139,8 +152,7 @@ class CreatePinView extends StatelessWidget {
                             //   }
                             //   return null;
                             // },
-                            onChanged:
-                                context.read<CreatePinCubit>().onAddressChanged,
+                            onChanged: context.read<CreatePinCubit>().onAddressChanged,
                           ),
                           Gap(context.minBlockVertical * 3.0),
                           InputBox(
@@ -151,8 +163,7 @@ class CreatePinView extends StatelessWidget {
                             //   }
                             //   return null;
                             // },
-                            onChanged:
-                                context.read<CreatePinCubit>().onCityChanged,
+                            onChanged: context.read<CreatePinCubit>().onCityChanged,
                           ),
                           Gap(context.minBlockVertical * 3.0),
                           InputBox(
@@ -164,9 +175,7 @@ class CreatePinView extends StatelessWidget {
                             //   return null;
                             // },
                             inputType: TextInputType.number,
-                            onChanged: context
-                                .read<CreatePinCubit>()
-                                .onPostalCodeChanged,
+                            onChanged: context.read<CreatePinCubit>().onPostalCodeChanged,
                           ),
                           Gap(context.minBlockVertical * 3.0),
                           InputBox(
@@ -177,17 +186,14 @@ class CreatePinView extends StatelessWidget {
                             //   }
                             //   return null;
                             // },
-                            onChanged:
-                                context.read<CreatePinCubit>().onCompanyChanged,
+                            onChanged: context.read<CreatePinCubit>().onCompanyChanged,
                           ),
                           Gap(context.minBlockVertical * 3.0),
                           BlocBuilder<CreatePinCubit, CreatePinState>(
                             builder: (context, state) {
                               return SelectBox<String>(
                                 value: state.potential,
-                                onChanged: (value) => context
-                                    .read<CreatePinCubit>()
-                                    .onPotentialChanged(value!),
+                                onChanged: (value) => context.read<CreatePinCubit>().onPotentialChanged(value!),
                                 items: [
                                   DropdownMenuItem(
                                     value: '',
@@ -217,39 +223,38 @@ class CreatePinView extends StatelessWidget {
                           ),
                           BlocBuilder<CreatePinCubit, CreatePinState>(
                             builder: (context, state) {
-                              if (routeType.toLowerCase() == 'construction') {
+                              if (widget.routeType.toLowerCase() == 'construction') {
                                 return Column(
                                   children: [
                                     Gap(context.minBlockVertical * 3.0),
                                     DateInputBox(
+                                      initialValue: DateTime.now(),
+                                      controller: TextEditingController(text: state.startDate),
                                       hintText: l10n.start_date,
-                                      // validator: (DateTime? e) {
-                                      //   if (e.toString().isEmpty) {
-                                      //     return 'Start date cannot be empty';
-                                      //   }
-                                      //   return null;
-                                      // },
+                                      validator: (DateTime? e) {
+                                        if (e.toString().isEmpty) {
+                                          return 'Start date cannot be empty';
+                                        }
+                                        return null;
+                                      },
                                       onChanged: (value) {
-                                        context
-                                            .read<CreatePinCubit>()
-                                            .onEndDateChanged(
+                                        context.read<CreatePinCubit>().onEndDateChanged(
                                               value.toIso8601String(),
                                             );
                                       },
                                     ),
                                     Gap(context.minBlockVertical * 3.0),
                                     DateInputBox(
+                                      initialValue: DateTime.now(),
                                       hintText: l10n.finish_date,
-                                      // validator: (DateTime? e) {
-                                      //   if (e.toString().isEmpty) {
-                                      //     return 'Finish date cannot be empty';
-                                      //   }
-                                      //   return null;
-                                      // },
+                                      validator: (DateTime? e) {
+                                        if (e.toString().isEmpty) {
+                                          return 'Finish date cannot be empty';
+                                        }
+                                        return null;
+                                      },
                                       onChanged: (value) {
-                                        context
-                                            .read<CreatePinCubit>()
-                                            .onStartDateChanged(
+                                        context.read<CreatePinCubit>().onStartDateChanged(
                                               value.toIso8601String(),
                                             );
                                       },
@@ -257,9 +262,7 @@ class CreatePinView extends StatelessWidget {
                                     Gap(context.minBlockVertical * 3.0),
                                     SelectBox<String>(
                                       value: '',
-                                      onChanged: (value) => context
-                                          .read<CreatePinCubit>()
-                                          .onConstructionPhaseChanged(value!),
+                                      onChanged: (value) => context.read<CreatePinCubit>().onConstructionPhaseChanged(value!),
                                       items: [
                                         DropdownMenuItem(
                                           value: '',
@@ -278,51 +281,38 @@ class CreatePinView extends StatelessWidget {
                                           child: Text('G'),
                                         ),
                                       ],
-                                      // validator: (dynamic value) {
-                                      //   if (value.toString().isEmpty) {
-                                      //     return 'Construction phase cannot be empty';
-                                      //   }
-                                      //   return null;
-                                      // },
+                                      validator: (dynamic value) {
+                                        if (value.toString().isEmpty) {
+                                          return 'Construction phase cannot be empty';
+                                        }
+                                        return null;
+                                      },
                                     ),
                                     Gap(context.minBlockVertical * 3.0),
                                     BlocBuilder<CreatePinCubit, CreatePinState>(
                                       builder: (context, state) {
                                         return Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                           children: [
                                             PinCheckBox(
                                               text: 'E',
-                                              value:
-                                                  state.branches.contains('E'),
-                                              onChanged: (value) => context
-                                                  .read<CreatePinCubit>()
-                                                  .onBranchesChanged('E'),
+                                              value: state.branches.contains('E'),
+                                              onChanged: (value) => context.read<CreatePinCubit>().onBranchesChanged('E'),
                                             ),
                                             PinCheckBox(
                                               text: 'H',
-                                              value:
-                                                  state.branches.contains('H'),
-                                              onChanged: (value) => context
-                                                  .read<CreatePinCubit>()
-                                                  .onBranchesChanged('H'),
+                                              value: state.branches.contains('H'),
+                                              onChanged: (value) => context.read<CreatePinCubit>().onBranchesChanged('H'),
                                             ),
                                             PinCheckBox(
                                               text: 'S',
-                                              value:
-                                                  state.branches.contains('S'),
-                                              onChanged: (value) => context
-                                                  .read<CreatePinCubit>()
-                                                  .onBranchesChanged('S'),
+                                              value: state.branches.contains('S'),
+                                              onChanged: (value) => context.read<CreatePinCubit>().onBranchesChanged('S'),
                                             ),
                                             PinCheckBox(
                                               text: 'MG',
-                                              value:
-                                                  state.branches.contains('MG'),
-                                              onChanged: (value) => context
-                                                  .read<CreatePinCubit>()
-                                                  .onBranchesChanged('MG'),
+                                              value: state.branches.contains('MG'),
+                                              onChanged: (value) => context.read<CreatePinCubit>().onBranchesChanged('MG'),
                                             ),
                                           ],
                                         );
@@ -346,14 +336,12 @@ class CreatePinView extends StatelessWidget {
                       text: l10n.submit,
                       onPressed: () {
                         if (_formKey.currentState!.validate()) {
-                          if ((state.currentLocation.latitude == 0 &&
-                                  state.currentLocation.longitude == 0) ||
-                              !state.hasLocation) {
+                          if ((state.currentLocation.latitude == 0 && state.currentLocation.longitude == 0) || !state.hasLocation) {
                             return context.showErrorMessage(
                               'GPS coordinate is required to display the pin on the map',
                             );
                           }
-                          context.read<CreatePinCubit>().createPin(routeType);
+                          context.read<CreatePinCubit>().createPin(widget.routeType);
                         }
                       },
                     );

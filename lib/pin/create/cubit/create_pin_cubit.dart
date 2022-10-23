@@ -40,10 +40,12 @@ class CreatePinCubit extends Cubit<CreatePinState> {
   }
 
   void onStartDateChanged(String startDate) {
+    debugPrint('start date changed: $startDate');
     emit(state.copyWith(startDate: startDate, status: CreatePinStatus.initial));
   }
 
   void onEndDateChanged(String endDate) {
+    debugPrint('end date changed');
     emit(state.copyWith(endDate: endDate, status: CreatePinStatus.initial));
   }
 
