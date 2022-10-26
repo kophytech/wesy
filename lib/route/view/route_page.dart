@@ -8,13 +8,14 @@ import 'package:wesy/app/app.dart';
 import 'package:wesy/app/bloc/app_bloc.dart';
 import 'package:wesy/route/cubit/route_cubit.dart';
 import 'package:wesy/route/route.dart';
+import 'package:google_geocoding/google_geocoding.dart' as geocoding;
 
 class RoutePage extends StatelessWidget {
   const RoutePage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return const RouteView();
+    return RouteView();
     // BlocProvider(
     //   create: (context) => RouteCubit(
     //     context.read<CsRepository>(),
@@ -26,7 +27,9 @@ class RoutePage extends StatelessWidget {
 }
 
 class RouteView extends StatefulWidget {
-  const RouteView({Key? key}) : super(key: key);
+  RouteView({Key? key}) : super(key: key);
+  static const googleApiKey = 'AIzaSyABvMKM_Oh3uAS-lhqIJEbXQOGNRZPW654';
+  final googleGeocoding = geocoding.GoogleGeocoding(googleApiKey);
 
   @override
   State<RouteView> createState() => _RouteViewState();
